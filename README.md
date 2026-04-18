@@ -35,7 +35,7 @@ DNI_v4.0_Replication_Package/
 ├── .env.example                  # copy to .env and paste your GEMINI_API_KEY
 ├── .gitignore
 ├── abstracts_snapshot.csv        # frozen abstract text for all 1,000 DOIs
-├── master_forensic_1000.csv      # frozen DNI scores (U, T, S, C, Novelty)
+├── master_forensic_1000.csv      # frozen DNI scores (U, T, S, C, Novelty) + ControversyIndex, Confidence
 ├── master_forensic_1000.jsonl    # same frozen scores in JSONL (one row per DOI)
 ├── tolerance_certificate.md      # full tolerance measurement (this package)
 ├── tolerance_summary.csv         # Run 1/2/3 summary statistics in tabular form
@@ -57,13 +57,12 @@ The TypeScript file in `src/` is the production source of truth — shipped so a
 ### Steps
 
 ```bash
-https://github.com/CarlosArleo/DNI_v4.0_Replication_Package
+git clone https://github.com/CarlosArleo/DNI_v4.0_Replication_Package.git
 cd DNI_v4.0_Replication_Package
 
 pip install -r requirements.txt
 cp .env.example .env            # then edit .env and paste your GEMINI_API_KEY
 
-# Windows PowerShell:
 python replicate_uniqueness.py
 python compare_uniqueness.py --frozen master_forensic_1000.csv --rederived outputs/rederived_uniqueness.csv --output outputs/tolerance_comparison.md
 ```
@@ -126,11 +125,11 @@ Three runs were conducted during package preparation, each against the same 1,00
 | 2   | gemini-2.5-flash | 0.4  | 1000      | 0.087       | 0.064         | 0.252 | 0.298 | 0.394 | 33.1%      | 51.3%      |
 | 3   | gemini-2.5-flash | 0.05 | 1000      | 0.085       | 0.064         | 0.248 | 0.300 | 0.364 | 32.2%      | 51.5%      |
 
-Run 1 uses the same model and temperature as the frozen baseline, so its \|ΔU\| measures pure LLM sampling variance. Runs 2 and 3 document the model-generation drift that results if a reviewer is forced onto `gemini-2.5-flash`. Run 1 initially produced 993 matches due to 7 DOIs hitting terminal 429 exhaustion; these were subsequently rerun and all 7 recovered, giving 1,000 matched DOIs.
+Run 1 uses the same model and temperature as the frozen baseline, so its |ΔU| measures pure LLM sampling variance. Runs 2 and 3 document the model-generation drift that results if a reviewer is forced onto `gemini-2.5-flash`. Run 1 initially produced 993 matches due to 7 DOIs hitting terminal 429 exhaustion; these were subsequently rerun and all 7 recovered, giving 1,000 matched DOIs.
 
 **Headline claim (default configuration — Run 1):**
 
-> *Under identical model and temperature, the single-call Uniqueness sensor reproduces to within ±0.140 on 95% of papers and ±0.162 on 99%, with a median deviation of 0.022 and a maximum of 0.384 across 993 matched DOIs. 67.6% of papers reproduce to within ±0.036 and 85.2% to within ±0.068.*
+> *Under identical model and temperature, the single-call Uniqueness sensor reproduces to within ±0.140 on 95% of papers and ±0.162 on 99%, with a median deviation of 0.022 and a maximum of 0.384 across 1,000 matched DOIs. 67.5% of papers reproduce to within ±0.036 and 85.1% to within ±0.068.*
 
 ### Why the single-call band is wider than production
 
@@ -179,7 +178,16 @@ The replication script isolates the Uniqueness sensor for independent verificati
 
 **Stage 2 — Four sensor dimensions.** Each dimension is computed independently by a different method. Uniqueness (U) is an LLM semantic judgement of how distinctive the paper's contribution is — the only non-deterministic dimension. Tension (T) measures whether the paper's citation network contains contradictory or competing frameworks; it is computed from citation graph topology and is fully deterministic. Synthesis (S) measures how many distinct knowledge domains the paper bridges; it is computed from semantic embedding dispersion and concept entropy and is largely deterministic. Coherence (C) measures the structural efficiency of the paper's citation network using graph theory; it is fully deterministic, carries zero weight in v4.0, and is logged for future versions.
 
-**Stage 3 — Socratic ensemble.** Rather than computing U once, DNI runs 5 parallel judge instances. Each receives the same paper but with slightly mutated dimension weights (Darwinian volatility 0.25), simulating different evaluator perspectives. Their scores are aggregated. If the spread between judges exceeds 0.10 — meaning they disagree significantly — a second generation of 5 additional judges is triggered (volatility 0.35), producing up to 10 judges total. This is the Socratic Cascade.
+**Stage 3 — Socratic ensemble.** Rather than computing U once, DNI runs 5 parallel judge instances. Each receives the same paper but with slightly mutated dimension weights (Darwinian volatility 0.25), simulating different evaluator perspectives. Their scores are aggregated into the ensemble U.
+
+From the ensemble's behaviour, DNI computes two diagnostic quantities that travel alongside U through the rest of the pipeline:
+
+* **ControversyIndex** is the spread across the judge scores — the range or standard deviation of their individual outputs. It measures how much the judges disagreed about the paper's uniqueness. A high ControversyIndex means the paper sits in genuinely contested territory where reasonable evaluators reach different conclusions; a low one means the judges converged quickly on a shared verdict.
+* **Confidence** is the inverse signal, derived from the same spread. A tight ensemble (all judges within ~0.02 of each other) yields Confidence near 1.0; a dispersed ensemble (judges spread across 0.3) yields Confidence near 0. In production, papers with Confidence ≥ 0.85 are treated as rock-solid; papers below 0.60 are flagged for human review.
+
+If ControversyIndex exceeds 0.10 — the first-generation judges disagreed significantly — a second generation of 5 additional judges is triggered at higher weight volatility (0.35 instead of 0.25), producing up to 10 judges total. This is the Socratic Cascade: the system spends more judge budget on papers where the first pass was uncertain, and less on papers where the first pass converged. ControversyIndex and Confidence are emitted alongside U in `master_forensic_1000.csv` so that a reviewer can see, for each individual paper, whether DNI is asserting its score with high confidence or flagging it as genuinely ambiguous. Neither quantity enters the S_final formula — they are audit surfaces, not score contributors — but they are the mechanism through which DNI admits what it does not know.
+
+This matters directly for the replication package. If a reviewer picks an outlier DOI where the replication run diverges from the frozen baseline, the frozen Confidence column tells them whether the original ensemble was itself uncertain about that paper. A low-Confidence paper *should* have a wider divergence; that is the system correctly reporting ambiguity rather than manufacturing false precision. Outliers tagged with low Confidence are not failures of the indicator — they are the indicator working as designed.
 
 **Stage 4 — Veto logic.** Three post-processing corrections apply domain knowledge on top of the raw LLM output. The Review Cap caps systematic reviews and meta-analyses at U=0.45. The Title Damper caps papers titled "Observation of X" or "Measurement of X" at U=0.75. The Bio Boost applies a floor of U=0.85 to papers with bio-method keywords in top bio journals when the LLM underscores them.
 
@@ -193,7 +201,7 @@ Uniqueness contributes 60% of the final score. It is the dominant and only non-d
 
 The 60% weight is defensible against the natural objection that U is the noisiest dimension in the stack. The single-call U tolerance band (§5 Run 1) is ±0.14 at p95 — if that noise were wired directly into a 60% weight, it would translate to ±0.084 of variance on the final score, enough to make rankings jumpy. The Socratic ensemble compresses ensemble U's p95 to roughly ±0.036, which in turn contributes only ±0.022 of variance on the final score. The 60% weight is therefore calibrated to what the ensemble can absorb; remove the ensemble and the weight would need to come down. This relationship between weight and variance absorption is what makes the DNI scoring formula more than a weighted sum of noisy components.
 
-A single LLM call per paper would be cheap but unreliable — one bad response corrupts the score. The Socratic ensemble absorbs per-call variance through averaging across judges. The veto layer corrects systematic LLM biases. The result is a score that is more stable, more calibrated, and more defensible than a naive LLM wrapper.
+A single LLM call per paper would be cheap but unreliable — one bad response corrupts the score. The Socratic ensemble absorbs per-call variance through averaging across judges. The veto layer corrects systematic LLM biases. ControversyIndex and Confidence expose the ensemble's internal disagreement so that each score arrives with its own uncertainty report attached. The result is a metascience instrument rather than a black-box classifier: a score that is more stable, more calibrated, more defensible, and honest about the cases it finds genuinely difficult.
 
 ## 10. Design rationale — LLM choice and data sovereignty
 
