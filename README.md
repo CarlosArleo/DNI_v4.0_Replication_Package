@@ -91,7 +91,7 @@ A dedicated Gemini API key for this review has been sent to the Challenge Team b
 3. Replace `your-api-key-here` with the key string from the private email. Save and close.
 4. Run `python replicate_uniqueness.py` as above.
 
-The key is scoped to a dedicated Google Cloud project with a $20/day spending cap and will be revoked at 23:59 UTC on 22 April 2026. No other action is required from the reviewer.
+The key is scoped to a dedicated Google Cloud project with a $20/day spending cap and will be revoked at 23:59 UTC on 30 April 2026. No other action is required from the reviewer.
 
 ### If your API project cannot access `gemini-2.0-flash`
 
