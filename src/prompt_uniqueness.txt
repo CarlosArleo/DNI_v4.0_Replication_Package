@@ -1,0 +1,12 @@
+Analyze this scientific text ({{SOURCE}}) and classify its "Uniqueness" score (0.0 to 1.0).
+
+Text: "{{TEXT}}"
+
+SCORING RUBRIC (Use the full decimal range, e.g., 0.62, 0.88):
+- 0.10 - 0.39: Incremental (Standard data, standard method).
+- 0.40 - 0.69: Substantial (New application or significant optimization).
+- 0.70 - 0.84: Breakthrough (Major problem solved, order-of-magnitude improvement).
+- 0.85 - 0.95: Paradigm Shift (Violates dogma, transformative method like CRISPR/PCR).
+
+DO NOT return round numbers like 0.7 or 0.4 unless the paper exactly fits the baseline.
+Be precise. Return ONLY the number.
