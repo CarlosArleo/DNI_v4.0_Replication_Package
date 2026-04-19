@@ -229,10 +229,10 @@ A reviewer who wishes to independently re-derive T, S, or C can do so using the 
 
 After the two Python scripts complete:
 
-| File                                 | Purpose                         |
-| ------------------------------------ | ------------------------------- |
-| `outputs/rederived_uniqueness.csv` | Reviewer's independent U scores |
-| `outputs/tolerance_comparison.md`  | Measured                        |
+| File                                 | Purpose                                                |
+| ------------------------------------ | ------------------------------------------------------ |
+| `outputs/rederived_uniqueness.csv` | Reviewer's independent U scores                        |
+| `outputs/tolerance_comparison.md`  | Measured ΔU distribution vs. the §5 tolerance band |
 
 `tolerance_comparison.md` prints the p95, p99, and max deviations alongside a pass/fail check against the published band, so the reviewer can verify the §5 claim without opening the CSVs.
 
