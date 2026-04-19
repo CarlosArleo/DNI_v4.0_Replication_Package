@@ -1,10 +1,13 @@
+
+> **Scope:** this certificate reports **ensemble-vs-ensemble** reproducibility — a full 5-judge Socratic production run vs the frozen baseline — across 1,000 DOIs. This is NOT the single-call replication band published in README §5 Run 1 (Uniqueness p95 = 0.140). Single-call tolerance is what a reviewer running `replicate_uniqueness.py` will observe; ensemble tolerance is what the production indicator achieves after averaging across judges. Both numbers are correct; they measure different surfaces.
+
+---
+
 # DNI v4.0 — Tolerance Certificate
 
 **Matched DOIs:** 1000
 **Classification agreement:** 960/1000 (96.0%)
 **Review Cap veto agreement:** 996/1000 (99.6%)
-
-Scope: this certificate reports **ensemble-vs-ensemble** reproducibility (full 5-judge Socratic run vs frozen baseline) across 1,000 DOIs. For **single-call** replication tolerance — what a reviewer running `replicate_uniqueness.py` will observe — see README §5 Run 1 (Uniqueness p95 = 0.140) or regenerate `tolerance_comparison.md` via `compare_uniqueness.py`.
 
 ## Per-Dimension Tolerance Distribution
 
@@ -21,3 +24,4 @@ Scope: this certificate reports **ensemble-vs-ensemble** reproducibility (full 5
 ## Suggested README Language
 
 > *Under identical inputs, the Uniqueness sensor reproduces to within ±0.036 on 95% of papers, ±0.068 on 99%, with a maximum observed deviation of ±0.370 across 1000 DOIs. Variance is driven by Gemini temperature=0.4 and Monte-Carlo weight mutation (volatility 0.25 / 0.35).*
+>
