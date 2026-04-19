@@ -188,6 +188,8 @@ This distinction matters for assessing the DNI as a scientific instrument. A raw
 
 The ensemble is not averaging five opinions. It is stress-testing one principled judgement across five constitutional perspectives.
 
+`src/genotype.ts` is the sensor factory — it declares the measurement interface and separates deterministic sensors from the LLM-driven sensor at the type level. The constitutional vetoes (Review Cap, Coherence Veto, Title Damper, Bio Boost) execute downstream in `src/core/fitnessEvaluationFlow.ts` after sensor scores are aggregated. Both files together constitute the FBPR frame; neither is complete without the other.
+
 **The genotype — FBPR in code.** The frame described above is not rhetorical. It is a concrete TypeScript file shipped with this package at `src/genotype.ts`, where every sensor is declared as a constrained evaluator with a uniform interface:
 
 ```typescript
