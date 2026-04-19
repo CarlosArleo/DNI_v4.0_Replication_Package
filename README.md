@@ -29,6 +29,8 @@ Uniqueness is the primary signal of novelty — the direct answer to *"is this p
 ```
 DNI_v4.0_Replication_Package/
 ├── README.md                     # this file
+├── DISCLOSURE_PROTOCOL.md        # public vs sealed boundary, reviewer-access terms
+├── SEALED_ARTIFACTS.sha256       # pre-registered hashes of the Tier-3 sealed files
 ├── replicate_uniqueness.py       # what you run (single Python file)
 ├── compare_uniqueness.py         # post-run comparator
 ├── requirements.txt              # Python dependencies
@@ -37,18 +39,20 @@ DNI_v4.0_Replication_Package/
 ├── abstracts_snapshot.csv        # frozen abstract text for all 1,000 DOIs
 ├── master_forensic_1000.csv      # frozen DNI scores (U, T, S, C, Novelty) + ControversyIndex, Confidence
 ├── master_forensic_1000.jsonl    # same frozen scores in JSONL (one row per DOI)
-├── tolerance_certificate.md      # full tolerance measurement (this package)
-├── tolerance_summary.csv         # Run 1/2/3 summary statistics in tabular form
-├── outliers.csv                  # rows exceeding the U band
+├── tolerance_certificate.md      # ensemble-vs-ensemble tolerance (v2, post-remediation)
+├── tolerance_summary.csv         # per-dimension tolerance statistics (machine-readable)
+├── per_paper_deltas.csv          # full 1,000-row run-1-vs-run-2 comparison, all dimensions
+├── outliers.csv                  # rows exceeding ±0.05 on Uniqueness or flipping class
 └── src/
-    ├── disruptionDetector.ts     # the production Uniqueness sensor (reference)
     ├── genotype.ts               # the four-sensor factory — FBPR in code (reference)
-    └── prompt_uniqueness.txt     # verbatim Gemini prompt template
+    ├── prompt_uniqueness.txt     # verbatim Gemini prompt template for the U sensor
+    ├── core/
+    │   └── fitnessEvaluationFlow.ts   # per-judge fitness aggregation (formula, vetoes)
     └── mutation/
-        └── weightMutation.ts     # Darwinian weight mutation — ensemble diversity operator (reference)
+        └── weightMutation.ts     # Darwinian weight mutation — ensemble diversity operator
 ```
 
-The TypeScript file in `src/` is the production source of truth — shipped so a reviewer can verify that `replicate_uniqueness.py` is a faithful port. You do not need Node.js or TypeScript to run the package; Python is sufficient.
+The TypeScript files in `src/` are the production harness — the four-sensor factory (`genotype.ts`), the per-judge fitness aggregation (`core/fitnessEvaluationFlow.ts`), and the ensemble weight-mutation operator (`mutation/weightMutation.ts`). Together with `prompt_uniqueness.txt`, they document how the reproduced scores are composed. The sealed sensor implementations — Tension, Synthesis, Coherence, and the Uniqueness post-processing — are held as Tier-3 reagents with pre-registered hashes; see `DISCLOSURE_PROTOCOL.md`. You do not need Node.js or TypeScript to run this package; Python is sufficient.
 
 ## 3. How to reproduce
 
@@ -132,7 +136,11 @@ Run 1 uses the same model and temperature as the frozen baseline, so its |ΔU| m
 
 **Headline claim (default configuration — Run 1):**
 
-> *Under identical model and temperature, the single-call Uniqueness sensor reproduces to within ±0.140 on 95% of papers and ±0.162 on 99%, with a median deviation of 0.022 and a maximum of 0.384 across 1,000 matched DOIs. 67.5% of papers reproduce to within ±0.036 and 85.1% to within ±0.068.*
+> *Two independent full-pipeline runs of the 5-judge Socratic ensemble against the frozen 1,000-DOI sample reproduce the Uniqueness dimension to within  **±0.036 on 95% of papers, ±0.062 on 99%, with a maximum observed deviation of ±0.100** . The composite NoveltyScore reproduces to within  **±0.022 at p95, ±0.037 at p99, max ±0.060** . The Tension and Coherence dimensions reproduce  **exactly on all 1,000 DOIs** . The Synthesis dimension reproduces exactly on 99.7% of DOIs (max residual Δ = 0.045). **Classification agreement is 95.8%; Review Cap veto agreement is 99.9%.** Full per-paper deltas are in `per_paper_deltas.csv`; the 55 papers that exceed ±0.05 on Uniqueness or that flip class are listed in `outliers.csv`.*
+>
+> *The 42 classification disagreements are boundary flips at the 0.55 Incremental/Moderately-Novel threshold: no paper in this re-run flipped class with a |ΔNoveltyScore| above 0.06. This is categorical-function sensitivity at a fixed threshold, not non-determinism in the underlying indicator. The scalar bands above are the correct figure to cite for reproducibility; the classification percentage is an artefact of the threshold design.*
+>
+> *This supersedes the v1 ensemble certificate of 19 April 2026. The remediation work reduced the Uniqueness max |Δ| from 0.370 to 0.100 (3.7× tighter) and the NoveltyScore max from 0.3202 to 0.0600 (5.3× tighter). Full details in `tolerance_certificate.md` §3.*
 
 ### Why the single-call band is wider than production
 
@@ -295,14 +303,26 @@ A natural question is whether DNI could run using open-weight models (Llama, Mis
 
 The most reproducible future version of the Uniqueness sensor would use a seedable, open-weight model running locally at temperature 0 — producing bit-exact results across all reviewers regardless of API availability or model version drift. This is the direction DNI v5.0 will explore.
 
-## 11. How to contact me
+### 11. Disclosure boundary — what is published and what is sealed
+
+This replication package follows an explicit, documented split between a public harness and a sealed reagent. The reasoning is the same as for a biochemistry paper that publishes its assay protocol while keeping the proprietary antibody under MTA: the protocol is reviewable, the reagent is controlled, and the replication contract is satisfied by protocol disclosure alone.
+
+**Published (Tier 1, this repository, MIT licence).** The orchestration spine (`src/genotype.ts`), the weight-mutation operator (`src/mutation/weightMutation.ts`), the fitness aggregation harness (`src/core/fitnessEvaluationFlow.ts`), the Uniqueness prompt (`prompt_uniqueness.txt`), the single-call replication script, the comparator, the frozen scores, the tolerance certificate, and every per-paper delta that supports the reproducibility claims in §5.
+
+**Published behaviourally (Tier 2, in this README).** Each sealed component has a behavioural card describing what it consumes, what it produces, what fallbacks it uses under data blindness, and what known failure modes exist. See §9 Stages 2–4 for the sensor cards and `src/core/fitnessEvaluationFlow.ts` Phases 7–8 for the veto behaviour.
+
+**Sealed (Tier 3, under controlled access).** The four sensor implementations — `citationAnalyzer.ts`, `synthesisDetector.ts`, `coherenceDetector.ts`, `disruptionDetector.ts` — plus any retrieval corpus or cached embeddings. SHA-256 hashes of these files are listed in `SEALED_ARTIFACTS.sha256` and will be timestamped publicly (Zenodo embargoed DOI) before the UKRI submission deadline. Accredited reviewers, including the UKRI panel, may request Tier-3 access under a short Replication MTA; see `DISCLOSURE_PROTOCOL.md` §5.
+
+**Why this is sufficient for the replication contract.** Tier 1 lets any reviewer confirm that the mechanics are deterministic within the reported band. Tier 2 lets any reviewer confirm that the sealed components behave as documented. Tier 3 — available under MTA — lets any accredited reviewer confirm that the sealed implementations match their pre-registered hashes and produce the reported outputs end-to-end. No claim in this package requires the reviewer to trust the author.
+
+## 12. How to contact me
 
 For clarifications during the review window (17–22 April 2026):
 
 - Email: c.arleo@localis-ai.uk
 - Subject line: "UKRI DNI v4.0 Replication — `<your question>`"
 
-## 12. Upstream and citation
+## 13. Upstream and citation
 
 A sanitised release of the full DNI v4.0 source is in preparation and available on request.
 
