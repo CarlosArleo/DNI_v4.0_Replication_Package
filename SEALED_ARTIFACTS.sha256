@@ -1,0 +1,25 @@
+# DNI v4.0 — Sealed artefact hash registry
+#
+# Format: <sha256_hex>  <relative_path>
+#
+# Generated on the author's local machine from the production source tree
+# at src/ai/flows/dni/. These hashes pre-register the content of the Tier-3
+# sealed artefacts described in DISCLOSURE_PROTOCOL.md §4.
+#
+# To verify: on receipt of the Tier-3 bundle under MTA, run
+#   sha256sum <file>
+# and confirm the output matches the line below for that file.
+#
+# ---------------------------------------------------------------------------
+# Timestamp and signing:
+#   - This file is timestamped publicly via GitHub Gist (public, permanent).
+#   - Gist URL: https://gist.github.com/CarlosArleo/99308d631597120dc826d5e838e67ea5
+#   - Gist timestamp: 2026-04-19 13:45 UTC
+#   - Zenodo DOI: <TO BE INSERTED ON DEPOSIT>
+#   - Deposit date: <TO BE INSERTED ON DEPOSIT>
+# ---------------------------------------------------------------------------
+
+D634133F2C5A3EA8FABB2E1AA7A9FB5C0A0C6B3EC0261C50C54C4A5FCC1AEB58  src/ai/flows/dni/detectors/citationAnalyzer.ts
+1F18C8C22422A6B17C01041BBE421BB622DE03548705EDB2CBD7E0885F5C315B  src/ai/flows/dni/detectors/synthesisDetector.ts
+5AE3812EDC752D86BF6B2DBBA295414AE6FAE3ED2E6283616D57D347FCA1FD44  src/ai/flows/dni/detectors/coherenceDetector.ts
+204C3D218AE819218B0A6B4DD05EE45AE8609E2FF795BF721B0339961DC3F735  src/ai/flows/dni/detectors/disruptionDetector.ts
