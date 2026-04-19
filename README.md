@@ -113,6 +113,34 @@ Some newly-created Google Cloud projects are locked out of the 2.0 generation an
 
 No other DNI components (Socratic Cascade, Sniper Gate, weight mutation, Ghost Frame fallback) are invoked by the replication script. Those produce the final NoveltyScore downstream of U and are deterministic once U is fixed, which is why the Challenge Team's email accepts T, S, C as pre-computed.
 
+**Why the Uniqueness Score is Principled, Not Arbitrary: Frame-Based Principled Reasoning (FBPR)**
+
+A legitimate objection to any LLM-based scoring system is that it produces stochastic opinions dressed as measurements. If the model changes, the scores change. If the prompt changes, the scores change. There is no principled foundation — only a black box producing numbers that look like judgements.
+
+The DNI Uniqueness sensor is designed to defeat this objection at the architectural level through Frame-Based Principled Reasoning (FBPR).
+
+FBPR means the LLM does not generate a novelty score freely. It reasons within a pre-defined constitutional frame that specifies what valid outputs look like, what evaluation criteria apply, and what hard constraints override model output regardless of what the model would otherwise produce. The LLM is not the judge. It is a constrained reasoner operating inside a structure that exists independently of it.
+
+The frame has three components:
+
+**The Scoring Rubric.** The Uniqueness sensor does not ask the model to rate novelty on an open scale. It provides a deterministic four-tier rubric: 0.10–0.39 (Incremental), 0.40–0.69 (Substantial), 0.70–0.84 (Breakthrough), 0.85–0.95 (Paradigm Shift). Each tier is defined by specific structural criteria — method type, claim scope, relationship to existing literature — not by linguistic style or surface features. The model must locate the paper within this pre-defined structure, not invent a score.
+
+**The Constitutional Constraints.** Three hard vetoes override model output unconditionally. The Review Cap reduces any theoretical framework or meta-analysis to 0.45 regardless of raw score. The Coherence Veto caps any high novelty claim backed by incoherent citation structure at 0.50. The Retraction Filter zeroes any retracted paper regardless of semantic content. These are not instructions the model is asked to follow. They are structural post-processing rules that execute after the model responds, in code, with no model involvement. The Ouroboros Report documents the empirical proof: the constitutional veto fired 11 milliseconds after agent consensus, overriding a 0.6759 raw score to produce a final score of 0.45. The frame overrides the model.
+
+**The Persona Specification.** The Senior Editor persona is not a stylistic prompt. It is a functional constraint that instructs the model to evaluate mechanistic contribution, ignore hype, and assess against the historical trajectory of the field. It defines the epistemic position from which the model must reason, not the conclusion it should reach.
+
+**What this means for the tolerance band in Section 5.**
+
+The reproducibility claim in this package is a claim about the frame, not the model. The tolerance band measures LLM sampling variance — the residual stochasticity that remains when a model operates at temperature 0.4 within a fixed constitutional frame. Two reviewers using the same frame, the same rubric, and the same constitutional constraints will produce scores within the documented band not because the LLM is deterministic but because the frame bounds the space of valid outputs to a narrow and principled range.
+
+This distinction matters for assessing the DNI as a scientific instrument. A raw LLM call is an opinion. An LLM operating within FBPR is a constrained measurement. The tolerance band is the width of the measurement window. The frame is the instrument.
+
+**Why FBPR matters for the Socratic Ensemble.**
+
+FBPR also explains why the Socratic Ensemble produces robust rather than merely averaged scores. Each judge operates within the same constitutional frame but with mutated dimension weights — different emphases on Uniqueness, Tension, and Synthesis. The Darwinian Weight Mutation does not produce arbitrary variation; it produces structured variation within a principled frame. A paper that scores consistently high across judges with different emphases has demonstrated robustness against the frame's own internal diversity. A paper that scores inconsistently has been correctly identified as genuinely controversial — the Controversy Index captures this directly.
+
+The ensemble is not averaging five opinions. It is stress-testing one principled judgement across five constitutional perspectives.
+
 ## 5. Tolerance Certificate
 
 Gemini models do not expose seedable sampling at temperature > 0, so U is not bit-exact reproducible on repeated calls. The Tolerance Certificate below reports what a reviewer running the replication script once against the frozen data will actually observe. The frozen `master_forensic_1000.csv` baseline was produced with `gemini-2.0-flash` at temperature 0.4, which is also the default configuration of `replicate_uniqueness.py`.
