@@ -1,6 +1,7 @@
+
 # DNI v4.0 — Replication Package
 
-**Metascience Novelty Indicators Challenge — Blind Sample of 1,000 DOIs**
+**UKRI Metascience Novelty Indicators Challenge — Blind Sample of 1,000 DOIs**
 
 Author: Carlos Arleo (c.arleo@localis-ai.uk)
 Indicator: Darwinian Novelty Indicator (DNI), version 4.0
@@ -10,7 +11,7 @@ Package date: 22 April 2026
 
 ## 1. What this package is
 
-This repository lets an independent reviewer reproduce the **Uniqueness (U)** dimension of the DNI v4.0 Novelty Score for the blind 1,000-DOI sample issued by the Challenge Team on 17 April 2026.
+This repository lets an independent reviewer reproduce the **Uniqueness (U)** dimension of the DNI v4.0 Novelty Score for the blind 1,000-DOI sample issued by the UKRI Challenge Team on 17 April 2026.
 
 DNI v4.0 combines four dimensions into a single score:
 
@@ -42,6 +43,7 @@ DNI_v4.0_Replication_Package/
 ├── outliers.csv                  # rows exceeding the U band
 └── src/
     ├── disruptionDetector.ts     # the production Uniqueness sensor (reference)
+    ├── genotype.ts               # the four-sensor factory — FBPR in code (reference)
     └── prompt_uniqueness.txt     # verbatim Gemini prompt template
 ```
 
@@ -79,9 +81,9 @@ Outputs land in `outputs/`:
 * `rederived_uniqueness.csv` — your independent U scores
 * `tolerance_comparison.md` — measured |ΔU| distribution vs. the frozen scores
 
-### Note for reviewers — using the provided API key
+### Note for UKRI reviewers — using the provided API key
 
-A dedicated Gemini API key for this review has been sent to the Challenge Team by separate private email (subject:  *"DNI v4.0 Replication — Gemini API Key (Private)"* ). To use it:
+A dedicated Gemini API key for this review has been sent to the Challenge Team by separate private email (subject:  *"UKRI DNI v4.0 Replication — Gemini API Key (Private)"* ). To use it:
 
 1. Rename `.env.example` to `.env` (the file stays at the repository root).
 2. Open `.env` in any text editor. You will see a single line:
@@ -91,11 +93,11 @@ A dedicated Gemini API key for this review has been sent to the Challenge Team b
 3. Replace `your-api-key-here` with the key string from the private email. Save and close.
 4. Run `python replicate_uniqueness.py` as above.
 
-The key is scoped to a dedicated Google Cloud project with a $20/day spending cap and will be revoked at 23:59 UTC on 30 April 2026. No other action is required from the reviewer.
+The key is scoped to a dedicated Google Cloud project with a $20/day spending cap and will be revoked at 23:59 UTC on 22 April 2026. No other action is required from the reviewer.
 
 ### If your API project cannot access `gemini-2.0-flash`
 
-Some newly-created Google Cloud projects are locked out of the 2.0 generation and will return `404 NOT_FOUND` on the first call. In that case, edit `MODEL_NAME` in `replicate_uniqueness.py` to `gemini-2.5-flash` and rerun. The script will work, but the tolerance band widens — see §5 Run 2 for the expected numbers. The key provided to reviewers is scoped to a project that has `gemini-2.0-flash` access, so this step should not be required when using the provided key.
+Some newly-created Google Cloud projects are locked out of the 2.0 generation and will return `404 NOT_FOUND` on the first call. In that case, edit `MODEL_NAME` in `replicate_uniqueness.py` to `gemini-2.5-flash` and rerun. The script will work, but the tolerance band widens — see §5 Run 2 for the expected numbers. The key provided to UKRI reviewers is scoped to a project that has `gemini-2.0-flash` access, so this step should not be required when using the provided key.
 
 ## 4. What the sensor does
 
@@ -119,11 +121,11 @@ Gemini models do not expose seedable sampling at temperature > 0, so U is not bi
 
 Three runs were conducted during package preparation, each against the same 1,000-DOI frozen baseline:
 
-| Run | Model            | Temp | n matched | Mean\|ΔU\| | Median\|ΔU\| | p95   | p99   | Max   | ≤ ±0.036 | ≤ ±0.068 |
-| :-- | :--------------- | :--- | :-------- | :---------- | :------------ | :---- | :---- | :---- | :--------- | :--------- |
-| 1   | gemini-2.0-flash | 0.4  | 1000      | 0.036       | 0.022         | 0.140 | 0.162 | 0.384 | 67.5%      | 85.1%      |
-| 2   | gemini-2.5-flash | 0.4  | 1000      | 0.087       | 0.064         | 0.252 | 0.298 | 0.394 | 33.1%      | 51.3%      |
-| 3   | gemini-2.5-flash | 0.05 | 1000      | 0.085       | 0.064         | 0.248 | 0.300 | 0.364 | 32.2%      | 51.5%      |
+| Run | Model            | Temp | n matched | Mean&#124;ΔU&#124; | Median&#124;ΔU&#124; | p95   | p99   | Max   | ≤ ±0.036 | ≤ ±0.068 |
+| --- | ---------------- | ---- | --------- | ------------------- | --------------------- | ----- | ----- | ----- | ---------- | ---------- |
+| 1   | gemini-2.0-flash | 0.4  | 1000      | 0.036               | 0.022                 | 0.140 | 0.162 | 0.384 | 67.5%      | 85.1%      |
+| 2   | gemini-2.5-flash | 0.4  | 1000      | 0.087               | 0.064                 | 0.252 | 0.298 | 0.394 | 33.1%      | 51.3%      |
+| 3   | gemini-2.5-flash | 0.05 | 1000      | 0.085               | 0.064                 | 0.248 | 0.300 | 0.364 | 32.2%      | 51.5%      |
 
 Run 1 uses the same model and temperature as the frozen baseline, so its |ΔU| measures pure LLM sampling variance. Runs 2 and 3 document the model-generation drift that results if a reviewer is forced onto `gemini-2.5-flash`. Run 1 initially produced 993 matches due to 7 DOIs hitting terminal 429 exhaustion; these were subsequently rerun and all 7 recovered, giving 1,000 matched DOIs.
 
@@ -143,33 +145,69 @@ Run 3 lowered the temperature from 0.4 to 0.05 on the same model (`gemini-2.5-fl
 
 The replication package freezes the abstract text snapshot alongside the sensor, so the reviewer's run exercises only the LLM's sampling variance — not OpenAlex or Semantic Scholar drift between April 17 and April 22. The residual variance is an honest measure of the single-call U sensor's reproducibility under the reviewer's exposed surface. Published tolerance bands for LLM-based metascience indicators commonly hide methodology choices (ensemble averaging, smart routing, caching) that compress variance on paper but cannot be independently verified; this package exposes the smaller replicable surface and publishes its measured band directly.
 
-**Why the Uniqueness Score is Principled, Not Arbitrary: Frame-Based Principled Reasoning (FBPR)**
+### Why the Uniqueness Score is Principled, Not Arbitrary — Frame-Based Principled Reasoning (FBPR)
 
 A legitimate objection to any LLM-based scoring system is that it produces stochastic opinions dressed as measurements. If the model changes, the scores change. If the prompt changes, the scores change. There is no principled foundation — only a black box producing numbers that look like judgements.
 
-The DNI Uniqueness sensor is designed to defeat this objection at the architectural level through Frame-Based Principled Reasoning (FBPR).
+The DNI Uniqueness sensor is designed to defeat this objection at the architectural level through  **Frame-Based Principled Reasoning (FBPR)** .
 
 FBPR means the LLM does not generate a novelty score freely. It reasons within a pre-defined constitutional frame that specifies what valid outputs look like, what evaluation criteria apply, and what hard constraints override model output regardless of what the model would otherwise produce. The LLM is not the judge. It is a constrained reasoner operating inside a structure that exists independently of it.
 
-The frame has three components:
+The frame has three components.
 
-**The Scoring Rubric.** The Uniqueness sensor does not ask the model to rate novelty on an open scale. It provides a deterministic four-tier rubric: 0.10–0.39 (Incremental), 0.40–0.69 (Substantial), 0.70–0.84 (Breakthrough), 0.85–0.95 (Paradigm Shift). Each tier is defined by specific structural criteria — method type, claim scope, relationship to existing literature — not by linguistic style or surface features. The model must locate the paper within this pre-defined structure, not invent a score.
+**1. The Scoring Rubric.** The Uniqueness sensor does not ask the model to rate novelty on an open scale. It provides a deterministic four-tier rubric: 0.10–0.39 (Incremental), 0.40–0.69 (Substantial), 0.70–0.84 (Breakthrough), 0.85–0.95 (Paradigm Shift). Each tier is defined by specific structural criteria — method type, claim scope, relationship to existing literature — not by linguistic style or surface features. The model must locate the paper within this pre-defined structure, not invent a score.
 
-**The Constitutional Constraints.** Three hard vetoes override model output unconditionally. The Review Cap reduces any theoretical framework or meta-analysis to 0.45 regardless of raw score. The Coherence Veto caps any high novelty claim backed by incoherent citation structure at 0.50. The Retraction Filter zeroes any retracted paper regardless of semantic content. These are not instructions the model is asked to follow. They are structural post-processing rules that execute after the model responds, in code, with no model involvement. The Ouroboros Report documents the empirical proof: the constitutional veto fired 11 milliseconds after agent consensus, overriding a 0.6759 raw score to produce a final score of 0.45. The frame overrides the model.
+**2. The Constitutional Constraints.** Three hard vetoes override model output unconditionally. The Review Cap reduces any theoretical framework or meta-analysis to 0.45 regardless of raw score. The Coherence Veto caps any high novelty claim backed by incoherent citation structure at 0.50. The Retraction Filter zeroes any retracted paper regardless of semantic content. These are not instructions the model is asked to follow. They are structural post-processing rules that execute after the model responds, in code, with no model involvement. The Ouroboros Report documents the empirical proof: the constitutional veto fired 11 milliseconds after agent consensus, overriding a 0.6759 raw score to produce a final score of 0.45. The frame overrides the model.
 
-**The Persona Specification.** The Senior Editor persona is not a stylistic prompt. It is a functional constraint that instructs the model to evaluate mechanistic contribution, ignore hype, and assess against the historical trajectory of the field. It defines the epistemic position from which the model must reason, not the conclusion it should reach.
+**3. The Persona Specification.** The Senior Editor persona is not a stylistic prompt. It is a functional constraint that instructs the model to evaluate mechanistic contribution, ignore hype, and assess against the historical trajectory of the field. It defines the epistemic position from which the model must reason, not the conclusion it should reach.
 
-**What this means for the tolerance band in Section 5.**
-
-The reproducibility claim in this package is a claim about the frame, not the model. The tolerance band measures LLM sampling variance — the residual stochasticity that remains when a model operates at temperature 0.4 within a fixed constitutional frame. Two reviewers using the same frame, the same rubric, and the same constitutional constraints will produce scores within the documented band not because the LLM is deterministic but because the frame bounds the space of valid outputs to a narrow and principled range.
+**What this means for the tolerance band above.** The reproducibility claim in this package is a claim about the frame, not the model. The tolerance band measures LLM sampling variance — the residual stochasticity that remains when a model operates at temperature 0.4 within a fixed constitutional frame. Two reviewers using the same frame, the same rubric, and the same constitutional constraints will produce scores within the documented band not because the LLM is deterministic but because the frame bounds the space of valid outputs to a narrow and principled range.
 
 This distinction matters for assessing the DNI as a scientific instrument. A raw LLM call is an opinion. An LLM operating within FBPR is a constrained measurement. The tolerance band is the width of the measurement window. The frame is the instrument.
 
-**Why FBPR matters for the Socratic Ensemble.**
-
-FBPR also explains why the Socratic Ensemble produces robust rather than merely averaged scores. Each judge operates within the same constitutional frame but with mutated dimension weights — different emphases on Uniqueness, Tension, and Synthesis. The Darwinian Weight Mutation does not produce arbitrary variation; it produces structured variation within a principled frame. A paper that scores consistently high across judges with different emphases has demonstrated robustness against the frame's own internal diversity. A paper that scores inconsistently has been correctly identified as genuinely controversial — the Controversy Index captures this directly.
+**Why FBPR matters for the Socratic Ensemble.** FBPR also explains why the Socratic Ensemble produces robust rather than merely averaged scores. Each judge operates within the same constitutional frame but with mutated dimension weights — different emphases on Uniqueness, Tension, and Synthesis. The Darwinian Weight Mutation does not produce arbitrary variation; it produces structured variation within a principled frame. A paper that scores consistently high across judges with different emphases has demonstrated robustness against the frame's own internal diversity. A paper that scores inconsistently has been correctly identified as genuinely controversial — the ControversyIndex captures this directly.
 
 The ensemble is not averaging five opinions. It is stress-testing one principled judgement across five constitutional perspectives.
+
+**The genotype — FBPR in code.** The frame described above is not rhetorical. It is a concrete TypeScript file shipped with this package at `src/genotype.ts`, where every sensor is declared as a constrained evaluator with a uniform interface:
+
+```typescript
+// src/genotype.ts — DNI v4.0 four-sensor factory
+
+export interface DNIPressure {
+  name: string;
+  dimension: keyof DNIWeights;
+  evaluate_fitness(
+    frame: PaperFrame,
+    vectorScore?: number,
+    personaBias?: string
+  ): Promise<number | null>;
+}
+
+// Free sensors — deterministic, computed from citation graph and embeddings
+class TensionSensor    implements DNIPressure { /* citationAnalyzer */ }
+class SynthesisSensor  implements DNIPressure { /* synthesisDetector */ }
+class CoherenceSensor  implements DNIPressure { /* coherenceDetector */ }
+
+// Expensive sensor — LLM-driven, operates inside the FBPR frame
+class UniquenessSensor implements DNIPressure { /* disruptionDetector */ }
+
+export function getDNIGenotype(
+  _ctx: DNIContext,
+  challengeMode: boolean = false
+): DNIPressure[] {
+  return [
+    new TensionSensor(challengeMode),
+    new SynthesisSensor(),
+    new CoherenceSensor(),
+    new UniquenessSensor(challengeMode)
+  ];
+}
+```
+
+Three architectural facts are visible directly in this code. Every sensor implements the same `DNIPressure` interface and must return either a bounded numeric score or `null` — the type system enforces the frame, so no sensor can return prose, opinions, or free-form output. The file separates free sensors (deterministic, from citation graph and embeddings) from the one expensive sensor (Uniqueness, LLM-driven) — that cost segregation is precisely why T, S and C ship pre-computed in `master_forensic_1000.csv` while U is the only dimension exposed to the reviewer's live replication. Each sensor wraps its detector in `try/catch` with named telemetry (`DNI_DATA_BLINDNESS`, `DNI_SENSOR_FAIL`) so that failure modes are logged as first-class events rather than swallowed. The full file, approximately 130 lines with production-grade error handling and cold-start fallbacks, is shipped with the package for direct inspection.
+
+The Darwinian naming —  *genotype* ,  *pressure* , *evaluate_fitness* — is not ornamental. Each sensor is a selective pressure acting on the paper; the Socratic ensemble is the evolutionary mechanism that stress-tests fitness across mutated weight configurations; the final score is the phenotype that emerges. The code names these concepts explicitly so the architecture cannot drift from its theoretical foundation.
 
 ## 6. Why T, S and C are pre-computed
 
@@ -244,12 +282,12 @@ The most reproducible future version of the Uniqueness sensor would use a seedab
 For clarifications during the review window (17–22 April 2026):
 
 * Email: c.arleo@localis-ai.uk
-* Subject line: "DNI v4.0 Replication — `<your question>`"
+* Subject line: "UKRI DNI v4.0 Replication — `<your question>`"
 
 ## 12. Upstream and citation
 
 A sanitised release of the full DNI v4.0 source is in preparation and available on request.
 
-Reference: Arleo, C. (2026). *Darwinian Novelty Indicator v4.0: A Metascience Instrument.* Metascience Novelty Indicators Challenge, Finalist Submission.
+Reference: Arleo, C. (2026). *Darwinian Novelty Indicator v4.0: A Metascience Instrument.* UKRI Metascience Novelty Indicators Challenge, Finalist Submission.
 
 License: CC-BY 4.0 (this replication package and all accompanying data).
