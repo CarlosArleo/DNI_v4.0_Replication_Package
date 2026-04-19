@@ -1,4 +1,3 @@
-
 # DNI v4.0 — Replication Package
 
 **UKRI Metascience Novelty Indicators Challenge — Blind Sample of 1,000 DOIs**
@@ -19,7 +18,7 @@ DNI v4.0 combines four dimensions into a single score:
 S_final = (U × 0.60) + (T × 0.30) + (S × 0.10)
 ```
 
-Coherence (C) is computed from citation network efficiency and included in the output for reference, but carries zero weight in v4.0. The Review Cap veto is applied at 0.45 for systematic-review papers. Of these dimensions,  **only U is non-deterministic** , because it is produced by a Gemini 2.0 Flash LLM call at temperature 0.4. T, S and C are deterministic under identical inputs and are therefore shipped pre-computed in `master_forensic_1000.csv`. Per the Challenge Team's email of 17 April 2026, this package focuses the replication surface on U.
+Coherence (C) is computed from citation network efficiency and included in the output for reference, but carries zero weight in v4.0. The Review Cap veto is applied at 0.45 for systematic-review papers. Of these dimensions, **only U is non-deterministic**, because it is produced by a Gemini 2.0 Flash LLM call at temperature 0.4. T, S and C are deterministic under identical inputs and are therefore shipped pre-computed in `master_forensic_1000.csv`. Per the Challenge Team's email of 17 April 2026, this package focuses the replication surface on U.
 
 ### Why U carries 60% of the score and is the replication focus
 
@@ -53,8 +52,8 @@ The TypeScript file in `src/` is the production source of truth — shipped so a
 
 ### Prerequisites
 
-* Python ≥ 3.10
-* A Gemini API key: https://aistudio.google.com/apikey
+- Python ≥ 3.10
+- A Gemini API key: https://aistudio.google.com/apikey
 
 ### Steps
 
@@ -73,17 +72,17 @@ On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`, and us
 
 **Expected runtime:**
 
-* Paid-tier Gemini key: ~3–5 minutes at ~7 requests/sec.
-* Free-tier Gemini key (15 RPM limit): ~70 minutes. Rate limits are handled automatically by exponential backoff — just leave it running.
+- Paid-tier Gemini key: ~3–5 minutes at ~7 requests/sec.
+- Free-tier Gemini key (15 RPM limit): ~70 minutes. Rate limits are handled automatically by exponential backoff — just leave it running.
 
 Outputs land in `outputs/`:
 
-* `rederived_uniqueness.csv` — your independent U scores
-* `tolerance_comparison.md` — measured |ΔU| distribution vs. the frozen scores
+- `rederived_uniqueness.csv` — your independent U scores
+- `tolerance_comparison.md` — measured |ΔU| distribution vs. the frozen scores
 
 ### Note for UKRI reviewers — using the provided API key
 
-A dedicated Gemini API key for this review has been sent to the Challenge Team by separate private email (subject:  *"UKRI DNI v4.0 Replication — Gemini API Key (Private)"* ). To use it:
+A dedicated Gemini API key for this review has been sent to the Challenge Team by separate private email (subject: *"UKRI DNI v4.0 Replication — Gemini API Key (Private)"*). To use it:
 
 1. Rename `.env.example` to `.env` (the file stays at the repository root).
 2. Open `.env` in any text editor. You will see a single line:
@@ -109,8 +108,8 @@ Some newly-created Google Cloud projects are locked out of the 2.0 generation an
 4. **Gemini call.** `gemini-2.0-flash` at temperature 0.4, maxOutputTokens 32. Retries on 429 / 5xx with exponential backoff.
 5. **Parse.** Read the response as a float in [0.0, 1.0]. If the response is missing, unparseable, or out of range, the row is recorded with an `api_fail:` or `unparseable:` source label and no score; it is then excluded from the comparator merge.
 6. **Post-processing** (matches `disruptionDetector.ts`):
-   * **Title damper.** If the title starts with "Observation of", "Measurement of", or "Study of", cap U at 0.75. This prevents the LLM from over-rating routine observational papers.
-   * **Bio boost.** If the raw LLM score is ≤0.5 AND the text contains a bio-method keyword (CRISPR, organoid, stem cell, reprogramming, gene editing, etc.) AND the DOI is in a top bio journal (Cell, Nature Medicine, Nature Biotech, Nature Genetics), floor U at 0.85. This prevents the LLM from under-rating known high-impact bio contributions.
+   - **Title damper.** If the title starts with "Observation of", "Measurement of", or "Study of", cap U at 0.75. This prevents the LLM from over-rating routine observational papers.
+   - **Bio boost.** If the raw LLM score is ≤0.5 AND the text contains a bio-method keyword (CRISPR, organoid, stem cell, reprogramming, gene editing, etc.) AND the DOI is in a top bio journal (Cell, Nature Medicine, Nature Biotech, Nature Genetics), floor U at 0.85. This prevents the LLM from under-rating known high-impact bio contributions.
 7. Append `(doi, U_rederived, source, timestamp_iso)` to `outputs/rederived_uniqueness.csv`.
 
 No other DNI components (Socratic Cascade, Sniper Gate, weight mutation, Ghost Frame fallback) are invoked by the replication script. Those produce the final NoveltyScore downstream of U and are deterministic once U is fixed, which is why the Challenge Team's email accepts T, S, C as pre-computed.
@@ -121,11 +120,11 @@ Gemini models do not expose seedable sampling at temperature > 0, so U is not bi
 
 Three runs were conducted during package preparation, each against the same 1,000-DOI frozen baseline:
 
-| Run | Model            | Temp | n matched | Mean&#124;ΔU&#124; | Median&#124;ΔU&#124; | p95   | p99   | Max   | ≤ ±0.036 | ≤ ±0.068 |
-| --- | ---------------- | ---- | --------- | ------------------- | --------------------- | ----- | ----- | ----- | ---------- | ---------- |
-| 1   | gemini-2.0-flash | 0.4  | 1000      | 0.036               | 0.022                 | 0.140 | 0.162 | 0.384 | 67.5%      | 85.1%      |
-| 2   | gemini-2.5-flash | 0.4  | 1000      | 0.087               | 0.064                 | 0.252 | 0.298 | 0.394 | 33.1%      | 51.3%      |
-| 3   | gemini-2.5-flash | 0.05 | 1000      | 0.085               | 0.064                 | 0.248 | 0.300 | 0.364 | 32.2%      | 51.5%      |
+| Run | Model            | Temp | n matched | Mean\|ΔU\| | Median\|ΔU\| | p95   | p99   | Max   | ≤ ±0.036 | ≤ ±0.068 |
+| --- | ---------------- | ---- | --------- | ----------- | ------------- | ----- | ----- | ----- | ---------- | ---------- |
+| 1   | gemini-2.0-flash | 0.4  | 1000      | 0.036       | 0.022         | 0.140 | 0.162 | 0.384 | 67.5%      | 85.1%      |
+| 2   | gemini-2.5-flash | 0.4  | 1000      | 0.087       | 0.064         | 0.252 | 0.298 | 0.394 | 33.1%      | 51.3%      |
+| 3   | gemini-2.5-flash | 0.05 | 1000      | 0.085       | 0.064         | 0.248 | 0.300 | 0.364 | 32.2%      | 51.5%      |
 
 Run 1 uses the same model and temperature as the frozen baseline, so its |ΔU| measures pure LLM sampling variance. Runs 2 and 3 document the model-generation drift that results if a reviewer is forced onto `gemini-2.5-flash`. Run 1 initially produced 993 matches due to 7 DOIs hitting terminal 429 exhaustion; these were subsequently rerun and all 7 recovered, giving 1,000 matched DOIs.
 
@@ -135,11 +134,11 @@ Run 1 uses the same model and temperature as the frozen baseline, so its |ΔU| m
 
 ### Why the single-call band is wider than production
 
-In production, U is computed by a Socratic ensemble of 5 parallel judge calls whose scores are averaged (up to 10 calls when the ensemble spread exceeds 0.10 — the Socratic Cascade). Ensemble averaging reduces per-paper variance by roughly √5. The replication script makes one call per paper in order to keep the reviewer surface small, fast, and auditable. The band reported above is therefore a  **worst-case single-call bound** , not representative of production behaviour. A reviewer interested in ensemble-level reproducibility can run the script five times with independent seeds and average the per-DOI outputs; the averaged output reproduces to within roughly ±0.036 at p95, matching production. This five-run robustness check is not required for the Challenge submission but is available on request.
+In production, U is computed by a Socratic ensemble of 5 parallel judge calls whose scores are averaged (up to 10 calls when the ensemble spread exceeds 0.10 — the Socratic Cascade). Ensemble averaging reduces per-paper variance by roughly √5. The replication script makes one call per paper in order to keep the reviewer surface small, fast, and auditable. The band reported above is therefore a **worst-case single-call bound**, not representative of production behaviour. A reviewer interested in ensemble-level reproducibility can run the script five times with independent seeds and average the per-DOI outputs; the averaged output reproduces to within roughly ±0.036 at p95, matching production. This five-run robustness check is not required for the Challenge submission but is available on request.
 
 ### Why model generation matters more than temperature
 
-Run 3 lowered the temperature from 0.4 to 0.05 on the same model (`gemini-2.5-flash`). The resulting mean |ΔU| changed by only 0.003 — essentially nothing — while switching from `gemini-2.0-flash` to `gemini-2.5-flash` shifted mean |ΔU| by 0.051. This proves that the gap between Runs 2/3 and the frozen baseline is  **systematic model-generation drift** , not sampling noise. DNI scores should therefore be compared only within the same model version; cross-generation comparison will always widen the band by ~0.1 regardless of sampling discipline.
+Run 3 lowered the temperature from 0.4 to 0.05 on the same model (`gemini-2.5-flash`). The resulting mean |ΔU| changed by only 0.003 — essentially nothing — while switching from `gemini-2.0-flash` to `gemini-2.5-flash` shifted mean |ΔU| by 0.051. This proves that the gap between Runs 2/3 and the frozen baseline is **systematic model-generation drift**, not sampling noise. DNI scores should therefore be compared only within the same model version; cross-generation comparison will always widen the band by ~0.1 regardless of sampling discipline.
 
 ### Why this band is principled, not spun
 
@@ -149,7 +148,7 @@ The replication package freezes the abstract text snapshot alongside the sensor,
 
 A legitimate objection to any LLM-based scoring system is that it produces stochastic opinions dressed as measurements. If the model changes, the scores change. If the prompt changes, the scores change. There is no principled foundation — only a black box producing numbers that look like judgements.
 
-The DNI Uniqueness sensor is designed to defeat this objection at the architectural level through  **Frame-Based Principled Reasoning (FBPR)** .
+The DNI Uniqueness sensor is designed to defeat this objection at the architectural level through **Frame-Based Principled Reasoning (FBPR)**.
 
 FBPR means the LLM does not generate a novelty score freely. It reasons within a pre-defined constitutional frame that specifies what valid outputs look like, what evaluation criteria apply, and what hard constraints override model output regardless of what the model would otherwise produce. The LLM is not the judge. It is a constrained reasoner operating inside a structure that exists independently of it.
 
@@ -207,7 +206,7 @@ export function getDNIGenotype(
 
 Three architectural facts are visible directly in this code. Every sensor implements the same `DNIPressure` interface and must return either a bounded numeric score or `null` — the type system enforces the frame, so no sensor can return prose, opinions, or free-form output. The file separates free sensors (deterministic, from citation graph and embeddings) from the one expensive sensor (Uniqueness, LLM-driven) — that cost segregation is precisely why T, S and C ship pre-computed in `master_forensic_1000.csv` while U is the only dimension exposed to the reviewer's live replication. Each sensor wraps its detector in `try/catch` with named telemetry (`DNI_DATA_BLINDNESS`, `DNI_SENSOR_FAIL`) so that failure modes are logged as first-class events rather than swallowed. The full file, approximately 130 lines with production-grade error handling and cold-start fallbacks, is shipped with the package for direct inspection.
 
-The Darwinian naming —  *genotype* ,  *pressure* , *evaluate_fitness* — is not ornamental. Each sensor is a selective pressure acting on the paper; the Socratic ensemble is the evolutionary mechanism that stress-tests fitness across mutated weight configurations; the final score is the phenotype that emerges. The code names these concepts explicitly so the architecture cannot drift from its theoretical foundation.
+The Darwinian naming — *genotype*, *pressure*, *evaluate_fitness* — is not ornamental. Each sensor is a selective pressure acting on the paper; the Socratic ensemble is the evolutionary mechanism that stress-tests fitness across mutated weight configurations; the final score is the phenotype that emerges. The code names these concepts explicitly so the architecture cannot drift from its theoretical foundation.
 
 ## 6. Why T, S and C are pre-computed
 
@@ -229,10 +228,10 @@ A reviewer who wishes to independently re-derive T, S, or C can do so using the 
 
 After the two Python scripts complete:
 
-| File                                 | Purpose                                                |
-| ------------------------------------ | ------------------------------------------------------ |
-| `outputs/rederived_uniqueness.csv` | Reviewer's independent U scores                        |
-| `outputs/tolerance_comparison.md`  | Measured ΔU distribution vs. the §5 tolerance band |
+| File                                 | Purpose                                                 |
+| ------------------------------------ | ------------------------------------------------------- |
+| `outputs/rederived_uniqueness.csv` | Reviewer's independent U scores                         |
+| `outputs/tolerance_comparison.md`  | Measured\|ΔU\| distribution vs. the §5 tolerance band |
 
 `tolerance_comparison.md` prints the p95, p99, and max deviations alongside a pass/fail check against the published band, so the reviewer can verify the §5 claim without opening the CSVs.
 
@@ -248,8 +247,8 @@ The replication script isolates the Uniqueness sensor for independent verificati
 
 From the ensemble's behaviour, DNI computes two diagnostic quantities that travel alongside U through the rest of the pipeline:
 
-* **ControversyIndex** is the spread across the judge scores — the range or standard deviation of their individual outputs. It measures how much the judges disagreed about the paper's uniqueness. A high ControversyIndex means the paper sits in genuinely contested territory where reasonable evaluators reach different conclusions; a low one means the judges converged quickly on a shared verdict.
-* **Confidence** is the inverse signal, derived from the same spread. A tight ensemble (all judges within ~0.02 of each other) yields Confidence near 1.0; a dispersed ensemble (judges spread across 0.3) yields Confidence near 0. In production, papers with Confidence ≥ 0.85 are treated as rock-solid; papers below 0.60 are flagged for human review.
+- **ControversyIndex** is the spread across the judge scores — the range or standard deviation of their individual outputs. It measures how much the judges disagreed about the paper's uniqueness. A high ControversyIndex means the paper sits in genuinely contested territory where reasonable evaluators reach different conclusions; a low one means the judges converged quickly on a shared verdict.
+- **Confidence** is the inverse signal, derived from the same spread. A tight ensemble (all judges within ~0.02 of each other) yields Confidence near 1.0; a dispersed ensemble (judges spread across 0.3) yields Confidence near 0. In production, papers with Confidence ≥ 0.85 are treated as rock-solid; papers below 0.60 are flagged for human review.
 
 If ControversyIndex exceeds 0.10 — the first-generation judges disagreed significantly — a second generation of 5 additional judges is triggered at higher weight volatility (0.35 instead of 0.25), producing up to 10 judges total. This is the Socratic Cascade: the system spends more judge budget on papers where the first pass was uncertain, and less on papers where the first pass converged. ControversyIndex and Confidence are emitted alongside U in `master_forensic_1000.csv` so that a reviewer can see, for each individual paper, whether DNI is asserting its score with high confidence or flagging it as genuinely ambiguous. Neither quantity enters the S_final formula — they are audit surfaces, not score contributors — but they are the mechanism through which DNI admits what it does not know.
 
@@ -281,8 +280,8 @@ The most reproducible future version of the Uniqueness sensor would use a seedab
 
 For clarifications during the review window (17–22 April 2026):
 
-* Email: c.arleo@localis-ai.uk
-* Subject line: "UKRI DNI v4.0 Replication — `<your question>`"
+- Email: c.arleo@localis-ai.uk
+- Subject line: "UKRI DNI v4.0 Replication — `<your question>`"
 
 ## 12. Upstream and citation
 
