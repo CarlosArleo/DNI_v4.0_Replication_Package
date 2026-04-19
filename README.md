@@ -334,7 +334,7 @@ For clarifications during the review window (17–22 April 2026):
 
 ## 13. Upstream and citation
 
-A sanitised release of the full DNI v4.0 source is in preparation and available on request. 
+A sanitised release of the full DNI v4.0 source is in preparation and available on request.
 
 *For the full theoretical specification of the DNI architecture including sensor formulas and ensemble design, see Document 1 (Technical Specification) submitted with the challenge.*
 
