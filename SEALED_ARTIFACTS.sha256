@@ -15,8 +15,8 @@
 #   - This file is timestamped publicly via GitHub Gist (public, permanent).
 #   - Gist URL: https://gist.github.com/CarlosArleo/99308d631597120dc826d5e838e67ea5
 #   - Gist timestamp: 2026-04-19 13:45 UTC
-#   - Zenodo DOI: <TO BE INSERTED ON DEPOSIT>
-#   - Deposit date: <TO BE INSERTED ON DEPOSIT>
+#   - Zenodo DOI: https://doi.org/10.5281/zenodo.19652301
+#   - Deposit date: 2026-04-19
 # ---------------------------------------------------------------------------
 
 D634133F2C5A3EA8FABB2E1AA7A9FB5C0A0C6B3EC0261C50C54C4A5FCC1AEB58  src/ai/flows/dni/detectors/citationAnalyzer.ts
