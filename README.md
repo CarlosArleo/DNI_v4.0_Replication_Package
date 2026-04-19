@@ -44,6 +44,8 @@ DNI_v4.0_Replication_Package/
     ├── disruptionDetector.ts     # the production Uniqueness sensor (reference)
     ├── genotype.ts               # the four-sensor factory — FBPR in code (reference)
     └── prompt_uniqueness.txt     # verbatim Gemini prompt template
+    └── mutation/
+        └── weightMutation.ts     # Darwinian weight mutation — ensemble diversity operator (reference)
 ```
 
 The TypeScript file in `src/` is the production source of truth — shipped so a reviewer can verify that `replicate_uniqueness.py` is a faithful port. You do not need Node.js or TypeScript to run the package; Python is sufficient.
@@ -207,6 +209,23 @@ export function getDNIGenotype(
 Three architectural facts are visible directly in this code. Every sensor implements the same `DNIPressure` interface and must return either a bounded numeric score or `null` — the type system enforces the frame, so no sensor can return prose, opinions, or free-form output. The file separates free sensors (deterministic, from citation graph and embeddings) from the one expensive sensor (Uniqueness, LLM-driven) — that cost segregation is precisely why T, S and C ship pre-computed in `master_forensic_1000.csv` while U is the only dimension exposed to the reviewer's live replication. Each sensor wraps its detector in `try/catch` with named telemetry (`DNI_DATA_BLINDNESS`, `DNI_SENSOR_FAIL`) so that failure modes are logged as first-class events rather than swallowed. The full file, approximately 130 lines with production-grade error handling and cold-start fallbacks, is shipped with the package for direct inspection.
 
 The Darwinian naming — *genotype*, *pressure*, *evaluate_fitness* — is not ornamental. Each sensor is a selective pressure acting on the paper; the Socratic ensemble is the evolutionary mechanism that stress-tests fitness across mutated weight configurations; the final score is the phenotype that emerges. The code names these concepts explicitly so the architecture cannot drift from its theoretical foundation.
+
+**The mutation operator — structured variation in code.** The Darwinian Weight Mutation referenced in §5's tolerance certificate and in the Socratic Ensemble discussion above is implemented in `src/mutation/weightMutation.ts`. Each judge receives a centred perturbation of each weight, clamped to [0.02, 0.98], with Coherence locked at 0.0 (veto only) and the final vector renormalized so that Uniqueness + Tension + Synthesis = 1.0. This is the "structured variation within a principled frame" referenced in the FBPR discussion — the variation is bounded in code, not by prompt convention:
+
+typescript
+
+```typescript
+// From src/mutation/weightMutation.ts
+const mutated ={
+  uniqueness: normalized.uniqueness+(Math.random()-0.5)* volatility,
+  tension:    normalized.tension+(Math.random()-0.5)* volatility,
+  synthesis:  normalized.synthesis+(Math.random()-0.5)* volatility,
+  coherence:0.0// Never mutate coherence (veto filter only)
+};
+// ... clamp to [MIN_WEIGHT, MAX_WEIGHT], then normalize to sum = 1.0
+```
+
+Two volatility values are used in production: **0.25** for the Gen 1 ensemble of 5 judges, and **0.35** for the Gen 2 Socratic Cascade of up to 5 additional judges triggered when ControversyIndex exceeds 0.10. The higher Gen 2 volatility exists precisely to widen the perspective space when the first pass failed to converge — a principled escalation, not an arbitrary retry. The `validateWeights` export enforces the invariants (sum = 1.0, Coherence = 0, all weights in [0, 1]) so that downstream scoring cannot silently receive a malformed weight vector. Together with `src/genotype.ts`, this file makes the FBPR claim inspectable: the frame is a type (`DNIPressure`), the diversity is a bounded mutation (`mutateWeights`), and the instrument's behaviour is a function of both.
 
 ## 6. Why T, S and C are pre-computed
 
