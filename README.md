@@ -1,6 +1,6 @@
 # DNI v4.0 — Replication Package
 
-**UKRI Metascience Novelty Indicators Challenge — Blind Sample of 1,000 DOIs**
+**Metascience Novelty Indicators Challenge — Blind Sample of 1,000 DOIs**
 
 Author: Carlos Arleo (c.arleo@localis-ai.uk)
 Indicator: Darwinian Novelty Indicator (DNI), version 4.0
@@ -10,7 +10,7 @@ Package date: 22 April 2026
 
 ## 1. What this package is
 
-This repository lets an independent reviewer reproduce the **Uniqueness (U)** dimension of the DNI v4.0 Novelty Score for the blind 1,000-DOI sample issued by the UKRI Challenge Team on 17 April 2026.
+This repository lets an independent reviewer reproduce the **Uniqueness (U)** dimension of the DNI v4.0 Novelty Score for the blind 1,000-DOI sample issued by the Challenge Team on 17 April 2026.
 
 DNI v4.0 combines four dimensions into a single score:
 
@@ -86,9 +86,9 @@ Outputs land in `outputs/`:
 - `rederived_uniqueness.csv` — your independent U scores
 - `tolerance_comparison.md` — measured |ΔU| distribution vs. the frozen scores
 
-### Note for UKRI reviewers — using the provided API key
+### Note for reviewers — using the provided API key
 
-A dedicated Gemini API key for this review has been sent to the Challenge Team by separate private email (subject: *"UKRI DNI v4.0 Replication — Gemini API Key (Private)"*). To use it:
+A dedicated Gemini API key for this review has been sent to the Challenge Team by separate private email (subject: *"DNI v4.0 Replication — Gemini API Key (Private)"*). To use it:
 
 1. Rename `.env.example` to `.env` (the file stays at the repository root).
 2. Open `.env` in any text editor. You will see a single line:
@@ -102,7 +102,7 @@ The key is scoped to a dedicated Google Cloud project with a $20/day spending ca
 
 ### If your API project cannot access `gemini-2.0-flash`
 
-Some newly-created Google Cloud projects are locked out of the 2.0 generation and will return `404 NOT_FOUND` on the first call. In that case, edit `MODEL_NAME` in `replicate_uniqueness.py` to `gemini-2.5-flash` and rerun. The script will work, but the tolerance band widens — see §5 Run 2 for the expected numbers. The key provided to UKRI reviewers is scoped to a project that has `gemini-2.0-flash` access, so this step should not be required when using the provided key.
+Some newly-created Google Cloud projects are locked out of the 2.0 generation and will return `404 NOT_FOUND` on the first call. In that case, edit `MODEL_NAME` in `replicate_uniqueness.py` to `gemini-2.5-flash` and rerun. The script will work, but the tolerance band widens — see §5 Run 2 for the expected numbers. The key provided to reviewers is scoped to a project that has `gemini-2.0-flash` access, so this step should not be required when using the provided key.
 
 ## 4. What the sensor does
 
@@ -311,7 +311,7 @@ This replication package follows an explicit, documented split between a public 
 
 **Published behaviourally (Tier 2, in this README).** Each sealed component has a behavioural card describing what it consumes, what it produces, what fallbacks it uses under data blindness, and what known failure modes exist. See §9 Stages 2–4 for the sensor cards and `src/core/fitnessEvaluationFlow.ts` Phases 7–8 for the veto behaviour.
 
-**Sealed (Tier 3, under controlled access).** The four sensor implementations — `citationAnalyzer.ts`, `synthesisDetector.ts`, `coherenceDetector.ts`, `disruptionDetector.ts` — plus any retrieval corpus or cached embeddings. SHA-256 hashes of these files are listed in `SEALED_ARTIFACTS.sha256` and will be timestamped publicly (Zenodo embargoed DOI) before the UKRI submission deadline. Accredited reviewers, including the UKRI panel, may request Tier-3 access under a short Replication MTA; see `DISCLOSURE_PROTOCOL.md` §5.
+**Sealed (Tier 3, under controlled access).** The four sensor implementations — `citationAnalyzer.ts`, `synthesisDetector.ts`, `coherenceDetector.ts`, `disruptionDetector.ts` — plus any retrieval corpus or cached embeddings. SHA-256 hashes of these files are listed in `SEALED_ARTIFACTS.sha256` and will be timestamped publicly (Zenodo embargoed DOI) before the submission deadline. Accredited reviewers, including the panel, may request Tier-3 access under a short Replication MTA; see `DISCLOSURE_PROTOCOL.md` §5.
 
 **Why this is sufficient for the replication contract.** Tier 1 lets any reviewer confirm that the mechanics are deterministic within the reported band. Tier 2 lets any reviewer confirm that the sealed components behave as documented. Tier 3 — available under MTA — lets any accredited reviewer confirm that the sealed implementations match their pre-registered hashes and produce the reported outputs end-to-end. No claim in this package requires the reviewer to trust the author.
 
@@ -320,12 +320,12 @@ This replication package follows an explicit, documented split between a public 
 For clarifications during the review window (17–22 April 2026):
 
 - Email: c.arleo@localis-ai.uk
-- Subject line: "UKRI DNI v4.0 Replication — `<your question>`"
+- Subject line: "DNI v4.0 Replication — `<your question>`"
 
 ## 13. Upstream and citation
 
 A sanitised release of the full DNI v4.0 source is in preparation and available on request.
 
-Reference: Arleo, C. (2026). *Darwinian Novelty Indicator v4.0: A Metascience Instrument.* UKRI Metascience Novelty Indicators Challenge, Finalist Submission.
+Reference: Arleo, C. (2026). *Darwinian Novelty Indicator v4.0: A Metascience Instrument.* Metascience Novelty Indicators Challenge, Finalist Submission.
 
 License: CC-BY 4.0 (this replication package and all accompanying data).

@@ -4,7 +4,7 @@
 **Date:** 22 April 2026
 **Author:** Carlos Arleo — c.arleo@localis-ai.uk
 **Indicator:** Darwinian Novelty Indicator (DNI), version 4.0
-**Context:** UKRI Metascience Novelty Indicators Challenge — Replication Package for the Blind Sample of 1,000 DOIs
+**Context:** Metascience Novelty Indicators Challenge — Replication Package for the Blind Sample of 1,000 DOIs
 
 ---
 
@@ -76,7 +76,7 @@ SHA-256 hashes of the sealed artefacts are listed in `SEALED_ARTIFACTS.sha256` a
 
 ## 5. Reviewer access to sealed artefacts
 
-Accredited reviewers — including the UKRI Challenge panel — may request read-only access to the Tier 3 artefacts under a short Replication MTA covering non-redistribution and non-derivative-work use for the duration of review.
+Accredited reviewers — including the Challenge panel — may request read-only access to the Tier 3 artefacts under a short Replication MTA covering non-redistribution and non-derivative-work use for the duration of review.
 
 **Request:** email `c.arleo@localis-ai.uk` with subject line `DNI v4.0 Tier 3 access request`. Replies within 48 hours. Access is granted via a time-limited encrypted bundle matching the pre-registered hash.
 
@@ -84,13 +84,13 @@ Accredited reviewers — including the UKRI Challenge panel — may request read
 
 ## 6. Post-competition
 
-After the UKRI Challenge decision is announced, Tier 3 will be released under one of the following regimes, at the author's discretion:
+After the Challenge decision is announced, Tier 3 will be released under one of the following regimes, at the author's discretion:
 
 - Full open-source (MIT or Apache-2.0), matching Tier 1
 - Open-source under a scientific-use licence (e.g. CC-BY-NC for non-commercial research use)
 - Retained as proprietary with a commercial-licence pathway
 
-This protocol is explicit that **Tier 1 + Tier 2 are sufficient for the replication contract** as stated by the UKRI Challenge Team. Tier 3 is the reagent, not the protocol.
+This protocol is explicit that **Tier 1 + Tier 2 are sufficient for the replication contract** as stated by the Challenge Team. Tier 3 is the reagent, not the protocol.
 
 ---
 
