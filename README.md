@@ -24,6 +24,16 @@ Coherence (C) is computed from citation network efficiency and included in the o
 
 Uniqueness is the primary signal of novelty — the direct answer to *"is this paper saying something new?"* — which is why it is weighted heaviest. Tension (30%) and Synthesis (10%) capture secondary novelty flavours (paradigm intervention and domain bridging) and are weighted accordingly. The 60% weight is stable, not fragile, because in production U is computed by a Socratic ensemble of 5–10 parallel judges whose scores are averaged (see §9 Stage 3). Ensemble averaging compresses per-call variance by roughly √5, so the only non-deterministic dimension in the DNI stack becomes the most calibrated in practice. The Challenge Team therefore accepted T, S and C as pre-computed and asked this package to focus the replication surface on U alone — that is where the non-determinism lives, and where the architecture's value is tested. Even with the documentation supplied separately, this README is intended to stand on its own on this point: the weight is principled, the focus is principled, and the tolerance band in §5 is measured against exactly the reviewer surface described here.
 
+**A note on what this replication surface measures**
+
+The replication script in this package does not ask Gemini to rate novelty freely. It asks Gemini to locate a paper within a pre-defined constitutional frame — a four-tier rubric with hard structural criteria — and then applies deterministic post-processing rules in code that execute unconditionally, regardless of what the model returned. The Review Cap, the Title Damper, and the Bio Boost are not instructions the model is asked to follow; they are structural corrections that fire after the model responds, in code, with no model involvement.
+
+This distinction matters for interpreting the tolerance band in §5. The band does not measure how much an unconstrained LLM opinion drifts between runs. It measures the width of the measurement window within a fixed constitutional frame — the residual stochasticity that remains when a model operates at temperature 0.4 inside a structure that bounds the space of valid outputs to a narrow and principled range. Two reviewers running this script independently are not producing two different AI opinions about the same paper. They are producing two independent measurements from the same instrument.
+
+The genotype enforces this at the architectural level. Every sensor implements the DNIPressure interface and must return either a bounded numeric score or null — the type system prevents any sensor from returning prose, an opinion, or an out-of-range value. The separation between deterministic sensors (Tension, Synthesis, Coherence) and the LLM-driven sensor (Uniqueness) is declared in code, not in documentation. This is why T, S, and C are shipped pre-computed and why the replication surface is focused on U alone — that is where the non-determinism lives, and the tolerance certificate is an honest measure of exactly that surface.
+
+The frame is the instrument. The tolerance band is the measurement window. What this package asks a reviewer to verify is not whether the LLM agrees with itself, but whether the instrument reproduces its measurements within a documented and principled tolerance.
+
 ## 2. What's inside
 
 ```
