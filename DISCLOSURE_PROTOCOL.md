@@ -69,7 +69,8 @@ The following are **not** in this public repository. They are held as the scient
 - `src/detectors/disruptionDetector.ts` — Uniqueness sensor post-processing, Review Cap application, Title Damper, Bio Boost
 - Any retrieval corpus, cached embeddings, or fine-tuned weights used inside those detectors
 
-SHA-256 hashes of the sealed artefacts are listed in `SEALED_ARTIFACTS.sha256` and will be timestamped publicly (Zenodo embargoed DOI) on or before the submission deadline. The hash pre-registration establishes that the sealed artefacts existed before the 1,000-DOI blind sample was assembled and have not been modified since.
+SHA-256 hashes of the sealed artefacts are listed in `SEALED_ARTIFACTS.sha256` and are timestamped publicly at https://doi.org/10.5281/zenodo.19652301
+(deposited 2026-04-19).
 
 ---
 
