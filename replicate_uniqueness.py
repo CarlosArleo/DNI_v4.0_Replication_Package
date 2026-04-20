@@ -2,7 +2,7 @@
 """
 DNI v4.0 — Uniqueness Replication Script
 -----------------------------------------
-Reproduces the Uniqueness (U) dimension for the UKRI Metascience Challenge
+Reproduces the Uniqueness (U) dimension for the Metascience Challenge
 blind 1,000-DOI sample. Faithful Python port of src/disruptionDetector.ts.
 
 The frozen Master_Forensic dataset was produced with gemini-2.0-flash.
