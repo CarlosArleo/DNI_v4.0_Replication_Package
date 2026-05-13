@@ -1,0 +1,77 @@
+```mermaid
+flowchart TB
+    subgraph STAGE1["STAGE 1: Data Ingestion"]
+        OA[OpenAlex] --> PF[PaperFrame]
+        SS[Semantic Scholar] --> PF
+        PF --> |DOI, Title, Abstract, Citations, Embeddings| S2
+    end
+
+    subgraph STAGE2["STAGE 2: Four Sensors"]
+        S2[PaperFrame]
+        
+        subgraph SENSORS["Sensor Dimensions"]
+            U[Uniqueness U<br/>⚠️ NON-DETERMINISTIC<br/>Weight: 60%<br/>Gemini 2.0 Flash, Temp 0.4]
+            T[Tension T<br/>✅ DETERMINISTIC<br/>Weight: 30%<br/>Citation Graph Topology]
+            S[Synthesis S<br/>✅ DETERMINISTIC<br/>Weight: 10%<br/>Embedding Dispersion]
+            C[Coherence C<br/>✅ DETERMINISTIC<br/>Weight: 0%<br/>Graph Efficiency - Veto Only]
+        end
+        
+        subgraph VETO["Constitutional Vetoes (Post-Processing)"]
+            TD[Title Damper<br/>"Observation of X" → cap at 0.75]
+            BB[Bio Boost<br/>Bio keywords + Top journal<br/>+ raw U ≤0.5 → floor at 0.85]
+            RC[Review Cap<br/>Systematic reviews<br/>→ cap at 0.45]
+        end
+        
+        S2 --> U --> VETO
+        S2 --> T
+        S2 --> S
+        S2 --> C
+    end
+
+    subgraph STAGE3["STAGE 3: Socratic Ensemble (dniEvolutionaryLoop)"]
+        VETO --> GEN1
+        
+        GEN1[Generation 1<br/>5 Judges<br/>Volatility 0.25]
+        GEN1 --> |Calculate spread| CHECK{Spread ≥ 0.10<br/>& Mean > 0.40?}
+        CHECK --> |Yes| GEN2[Generation 2<br/>5 Judges<br/>Volatility 0.35]
+        CHECK --> |No| AGG
+        GEN2 --> AGG[Aggregate: U_mean, T_mean,<br/>S_mean, C_mean]
+        
+        AGG --> STATS[Calculate:<br/>Confidence = 1 - spread×0.9<br/>ControversyIndex = min(1.0, spread×10)]
+    end
+
+    subgraph STAGE4["STAGE 4: Skeptic Gate"]
+        STATS --> FORMULA[NoveltyScore =<br/>U_mean×0.6 + T_mean×0.3 + S_mean×0.1]
+        FORMULA --> REVIEW_CHECK{Is Review Paper?}
+        REVIEW_CHECK --> |Yes| CAP[Apply Review Cap at 0.45]
+        REVIEW_CHECK --> |No| FINAL_SCORE
+        CAP --> FINAL_SCORE[Final NoveltyScore]
+    end
+
+    subgraph STAGE5["STAGE 5: Classification"]
+        FINAL_SCORE --> CLASSIFY
+        CLASSIFY{Score Range}
+        CLASSIFY --> |≥ 0.82| PB[Paradigm-Breaking]
+        CLASSIFY --> |0.70 - 0.8199| HN[Highly Novel]
+        CLASSIFY --> |0.55 - 0.6999| MN[Moderately Novel]
+        CLASSIFY --> |≤ 0.5499| INC[Incremental]
+        
+        CONF_CHECK{Confidence < 0.60?}
+        PB --> CONF_CHECK
+        HN --> CONF_CHECK
+        MN --> CONF_CHECK
+        INC --> CONF_CHECK
+        CONF_CHECK --> |Yes| CONTRO[Add "Controversial" prefix]
+        CONF_CHECK --> |No| OUTPUT
+        CONTRO --> OUTPUT
+    end
+
+    subgraph OUTPUT["FINAL OUTPUT"]
+        OUTPUT[NoveltyScore<br/>Confidence<br/>ControversyIndex<br/>Uniqueness, Tension, Synthesis, Coherence<br/>Classification, Explanation]
+    end
+
+    style U fill:#ff9999,stroke:#333,stroke-width:2px
+    style T fill:#99ff99,stroke:#333,stroke-width:2px
+    style S fill:#99ff99,stroke:#333,stroke-width:2px
+    style C fill:#99ff99,stroke:#333,stroke-width:2px
+    style FORMULA fill:#ffcc00,stroke:#333,stroke-width:2px
