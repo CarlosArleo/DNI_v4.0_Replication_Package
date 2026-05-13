@@ -340,6 +340,8 @@ A sanitised release of the full DNI v4.0 source is in preparation and available 
 
 *For the full theoretical specification of the DNI architecture including sensor formulas and ensemble design, see Document 1 (Technical Specification) submitted with the challenge.*
 
+DEMO VIDEO: https://drive.google.com/file/d/1oqGl8VwLKz8WGsg7rVgC_x205qItyXmx/view?usp=drive_link
+
 Reference: Arleo, C. (2026). *Darwinian Novelty Indicator v4.0: A Metascience Instrument.* Metascience Novelty Indicators Challenge, Finalist Submission.
 
 License: CC-BY 4.0 (this replication package and all accompanying data).
