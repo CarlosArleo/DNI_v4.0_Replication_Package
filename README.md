@@ -327,6 +327,22 @@ This replication package follows an explicit, documented split between a public 
 
 **Why this is sufficient for the replication contract.** Tier 1 lets any reviewer confirm that the mechanics are deterministic within the reported band. Tier 2 lets any reviewer confirm that the sealed components behave as documented. Tier 3 — available under MTA — lets any accredited reviewer confirm that the sealed implementations match their pre-registered hashes and produce the reported outputs end-to-end. No claim in this package requires the reviewer to trust the author.
 
+# Demonstration Video
+
+A real-time recording of the DNI v4.0 pipeline processing the 1,000-DOI blind sample is available here:
+
+**[ Watch: DNI v4.0 Processing 1,000 DOIs](https://drive.google.com/file/d/1oqGl8VwLKz8WGsg7rVgC_x205qItyXmx/view?usp=drive_link)**
+
+*What the video shows:*
+
+- Live API calls to Gemini 2.0 Flash at temperature 0.4
+- The Socratic ensemble generating judge scores
+- Real-time aggregation of Uniqueness, Tension, and Synthesis dimensions
+- Final NoveltyScore calculation with confidence intervals
+- Complete processing of all 1,000 papers from the blind sample
+
+The video demonstrates the system's operational transparency and provides visual confirmation of the pipeline behavior described in §9 of this README.
+
 ## 12. How to contact me
 
 For clarifications during the review window (17–22 April 2026):
