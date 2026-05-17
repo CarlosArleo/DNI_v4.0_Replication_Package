@@ -360,4 +360,6 @@ DEMO VIDEO: https://drive.google.com/file/d/1oqGl8VwLKz8WGsg7rVgC_x205qItyXmx/vi
 
 Reference: Arleo, C. (2026). *Darwinian Novelty Indicator v4.0: A Metascience Instrument.* Metascience Novelty Indicators Challenge, Finalist Submission.
 
+*"Disruption emerges when novelty exceeds convention without exceeding comprehension." Carlos Arleo*
+
 License: CC-BY 4.0 (this replication package and all accompanying data).
